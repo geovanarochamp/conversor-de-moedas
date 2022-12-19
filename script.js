@@ -1,65 +1,70 @@
-const button = document.getElementById("convertButton");
+const button = document.getElementById("convertButton")
 const select = document.getElementById("currencyTo")
 
-const realValueText = document.getElementById("real-value-text");
-const convertValueText = document.getElementById("convert-value-text");
+const realValueText = document.getElementById("real-value-text")
+const convertValueText = document.getElementById("convert-value-text")
 
-const dolar = 5.2;
-const euro = 5.9;
-const bitcoin = 104828.06
-const coin = ''
+const coin = ""
 
 const changeCurrency = () => {
-    const currencyName = document.getElementById('currency-name')
-    const flag = document.getElementById('flag')
-    
-    if (select.value == 'euro') {
-        currencyName.innerHTML = "Euro"
-        flag.src = 'assets/eur.png'
+  const currencyName = document.getElementById("currency-name")
+  const flag = document.getElementById("flag")
 
-    } else if (select.value == 'bitcoin') {
-        currencyName.innerHTML = "Bitcoin"
-        flag.src = 'assets/bitcoin.png'
+  if (select.value == "euro") {
+    currencyName.innerHTML = "Euro"
+    flag.src = "assets/eur.png"
+  } else if (select.value == "bitcoin") {
+    currencyName.innerHTML = "Bitcoin"
+    flag.src = "assets/bitcoin.png"
+  } else if (select.value == "dolar") {
+    currencyName.innerHTML = "Dólar"
+    flag.src = "assets/usa.png"
+  }
 
-    } else if (select.value == 'dolar') {
-        currencyName.innerHTML = "Dólar"
-        flag.src = 'assets/usa.png'
-    }
-
-    convertValues()
+  convertValues()
 }
 
-const convertValues = () => {
-    const amount = document.getElementById("amount").value;
+const convertValues = async () => {
+  const amount = document.getElementById("amount").value
 
-    realValueText.innerHTML = new Intl.NumberFormat('pt-BR',
-    { style: 'currency', currency: 'BRL' }
-    ).format(amount);
+  const data = await fetch(
+    "https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,BTC-BRL"
+  ).then((response) => response.json())
 
-    if (select.value == 'dolar') {
-        const amountConverted = amount / dolar;
+  const dolar = data.USDBRL.high
+  const euro = data.EURBRL.high
+  const bitcoin = data.BTCBRL.high
 
-        convertValueText.innerHTML = new Intl.NumberFormat('en-US',
-        { style: 'currency', currency: 'USD' }
-        ).format(amountConverted);
+  console.log(data)
 
-    } else if (select.value == 'euro') {
-        const amountConverted = amount / euro;
+  realValueText.innerHTML = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(amount)
 
-        convertValueText.innerHTML = new Intl.NumberFormat("pt-BR", {
-            style: "currency",
-            currency: 'EUR',
-        }).format(amountConverted);
+  if (select.value == "dolar") {
+    const amountConverted = amount / dolar
 
-    } else if (select.value == 'bitcoin') {
-        const amountConverted = amount / bitcoin;
+    convertValueText.innerHTML = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amountConverted)
+  } else if (select.value == "euro") {
+    const amountConverted = amount / euro
 
-        convertValueText.innerHTML = new Intl.NumberFormat("pt-BR", {
-            style: "currency",
-            currency: 'BTC',
-        }).format(amountConverted);
-    }
-};
+    convertValueText.innerHTML = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "EUR",
+    }).format(amountConverted)
+  } else if (select.value == "bitcoin") {
+    const amountConverted = amount / bitcoin
+
+    convertValueText.innerHTML = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BTC",
+    }).format(amountConverted)
+  }
+}
 
 select.addEventListener("change", changeCurrency)
 button.addEventListener("click", convertValues)
